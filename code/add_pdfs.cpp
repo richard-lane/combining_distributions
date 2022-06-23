@@ -2,6 +2,8 @@
  * Toy simulation of finding an efficiency using Monte-Carlo
  */
 #include <algorithm>
+#include <cassert>
+#include <cstdlib>
 #include <fstream>
 #include <functional>
 #include <iostream>
@@ -74,11 +76,11 @@ void vector2csv(const std::vector<double>& v, const std::string& path)
     std::ofstream handle(path);
 
     // Write all the values except the last with a comma in between
-    for (size_t i=0; i<v.size() - 1; ++i)
+    for (size_t i = 0; i < v.size() - 1; ++i)
         handle << v[i] << ',';
 
     // Write the last value without a trailing comma
-    handle << v[v.size() -1];
+    handle << v[v.size() - 1];
 }
 
 /*
@@ -116,8 +118,14 @@ double factor(const std::vector<double>& v, const std::function<double(double)>&
 
 } // namespace
 
-int main()
+int main(int argc, char* argv[])
 {
+    // Either provide 0 or 2 CLI args
+    assert((argc == 1 || argc == 3) && "pass exactly 2 CLI args (evt numbers)");
+
+    const size_t n1 = (argc == 3) ? std::atoi(argv[1]) : 10000;
+    const size_t n2 = (argc == 3) ? std::atoi(argv[2]) : 10000;
+
     // Setup stuff for RNGs
     std::random_device rd{};
     auto               gen = std::mt19937(rd());
@@ -136,10 +144,8 @@ int main()
     dumpVals("efficiency.csv", domain, efficiency);
 
     // Generate points from both samples modulated by the efficiency
-    const auto fSamples =
-        sample(gen, 200000, [&efficiency, &f](double x) { return f(x) * efficiency(x); }, range, domain);
-    const auto gSamples =
-        sample(gen, 100000, [&efficiency, &g](double x) { return g(x) * efficiency(x); }, range, domain);
+    const auto fSamples = sample(gen, n1, [&efficiency, &f](double x) { return f(x) * efficiency(x); }, range, domain);
+    const auto gSamples = sample(gen, n2, [&efficiency, &g](double x) { return g(x) * efficiency(x); }, range, domain);
 
     vector2csv(fSamples, "fsamples.csv");
     vector2csv(gSamples, "gsamples.csv");
@@ -160,7 +166,7 @@ int main()
     dumpVals("approx.csv", domain, approx);
 
     // Generate some points from this generating PDF
-    const auto approxSamples = sample(gen, 500000, approx, range, domain);
+    const auto approxSamples = sample(gen, n1 + n2, approx, range, domain);
 
     vector2csv(approxSamples, "approxsamples.csv");
 }
