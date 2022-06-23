@@ -1,0 +1,14 @@
+# Python
+*.pyc
+*/__pycache__/*
+
+# Cpp
+code/build/*
+
+# TeX
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.pdf
+*.synctex.gz

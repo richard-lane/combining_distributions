@@ -1,0 +1,110 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+
+\title{Efficiency from Combined Distributions}
+
+\begin{document}
+
+\maketitle
+\begin{abstract}
+    Combining two distributions is useful
+\end{abstract}
+
+\section{Introduction}
+Simulations are widely used in particle physics and science in general to test models and predictions.
+One application in particular involves using a Monte-Carlo simulation (hereafter referred to as ``MC'')
+to estimate the ``detector efficiency'': the function determining whether a given event will be detected.
+This efficiency function may have a complicated form: in the case of a two-body decay (e.g. $D^0 \rightarrow K^+\pi^-$)
+the efficiency function will be a constant; for more complicated decays it will have a dependence on some possibly
+high-dimensional space. For example, the efficiency function for the $D^0\rightarrow K^+\pi^-\pi^+\pi^-$ decay will
+vary over a 5-dimensional space.
+
+A common technique for evaluating the efficiency is to compare MC simulation to
+what was generated, as seen in Eq.~\ref{efficiency_definition}
+\begin{equation}
+    \epsilon(x) = \frac{\rm{Reco}(x)}{\rm{Gen}(x)}
+    \label{efficiency_definition}
+\end{equation}
+Where we find our efficiency $\epsilon(x)$ by comparing our reconstructed (MC) and generated distributions.
+
+In some cases we may have two reconstructed and generated distributions, but expect them to obey the same
+efficiency function:
+\begin{equation}
+    \epsilon(x) = \frac{\rm{Reco^\alpha}(x)}{\rm{Gen^\alpha}(x)} = \frac{\rm{Reco^\beta}(x)}{\rm{Gen^\beta}(x)}
+    \label{two distributions}
+\end{equation}
+where our labels $\alpha$ and $\beta$ may refer to e.g. two CP-conjugate decays.
+
+When evaluating the efficiency using Eq.~\ref{two distributions} we would like to make best use of the reconstructed data
+since this may be expensive or impractical to generate arbitrary amounts of.
+It is, conversely, likely that generating events from the denominators is comparatively cheap and quick.
+We therefore would like to simply concatenate our \texttt{Reco} points, and find the correct
+proportions of each \texttt{Gen} distribution to compare it to in order to evaluate the efficiency:
+
+\begin{equation}
+    \epsilon(x) = \frac{\rm{Reco^{\alpha}(x) + Reco^{\beta}(x)}}{k_{\alpha}\rm{Gen^{\alpha}(x)} + k_{\beta}\rm{Gen^{\beta}(x)}}
+    \label{combined}
+\end{equation}
+
+The rest of this note outlines a method for evaluating this efficiency given two reconstructed and generator-level distributions.
+
+\section{Formalism}
+Consider a PDF $f(x)$.
+Consider the case where the sampling from this PDF is imperfect: i.e. instead of our sample looking like e.g. $f(x)$, it will instead
+look like Eq.~\ref{imperfect sampling}:
+where $\epsilon(x)$ is some ``efficiency'' function that modifies our underlying distribution.
+\begin{equation}
+    F(x) = \epsilon(x)f(x)
+    \label{imperfect sampling}
+\end{equation}
+
+In this paper we wish to extract $\epsilon(x)$; in the case of Eq.~\ref{imperfect sampling}, we can extract $\epsilon(x)$ with our knowledge of $f(x)$ by measuring $F(x)$.
+
+Consider however the case where we have two distributions:
+\begin{equation}
+    \begin{split}
+        F(x) = \epsilon(x)f(x)\\
+        G(x) = \epsilon(x)g(x)
+    \end{split}
+    \label{two_efficiencies}
+\end{equation}
+These distributions are not true PDFs, since the efficiency function may not be normalised.
+Consider now the case where we have different, unknown numbers of samples from each of these distributions.
+We reconstruct:
+\begin{equation}
+    H^{reco}(x) = \alpha\epsilon(x)f(x) + \beta\epsilon(x)g(x)
+    \label{combined_pdf}
+\end{equation}
+where $\alpha$ and $\beta$ are factors that tell us the relative proportion of each distribution in $H(x)$.
+These factors may not be known a priori.
+
+It is possible, however, to extract the efficiency: we can write
+\begin{equation}
+    \begin{aligned}
+        C_\alpha & = \alpha\int\epsilon dx                                \\
+                 & = \alpha\int\epsilon\frac{f(x)}{f(x)}dx                \\
+                 & = \int\left[\alpha\epsilon f(x)\right]\frac{1}{f(x)}dx \\
+                 & \approx \sum_{f}\frac{1}{f(x)}
+    \end{aligned}
+    \label{correction_factor}
+\end{equation}
+Where the Riemman sum is evaluated over the reconstructed f-type events.
+Similarly, we can write down the factor $C_\beta = \sum_g\frac{1}{g(x)}$.
+
+We can then use these sums to evaluate the efficiency:
+\begin{equation}
+    \begin{aligned}
+        \epsilon(x) & \equiv \frac{\alpha\epsilon(x)f(x) + \beta\epsilon(x)g(x)}{\alpha f(x) + \beta g(x)}                    \\
+                    & = \frac{\alpha\epsilon(x)f(x) + \beta\epsilon(x)g(x)}{C_\alpha f(x) + C_\beta g(x)} . \int\epsilon(x)dx
+    \end{aligned}
+    \label{efficiency_expression}
+\end{equation}
+where we have found the efficiency function up to a multiplicative constant $\int\epsilon(x)dx$ - changing this constant
+does not affect the shape of the efficiency.
+
+\end{document}
+
+\section{Example}
+
+\section{Conclusion}
