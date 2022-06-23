@@ -19,6 +19,7 @@ def plot_pdf(name: str) -> None:
 
     ax.plot(x, y)
     ax.set_title(name)
+    ax.set_ylim(0, 1)
 
     fig.savefig(f"{name}.png")
 
