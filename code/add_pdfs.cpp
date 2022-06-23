@@ -69,6 +69,23 @@ std::vector<double> linspace(const std::pair<double, double>& domain)
 }
 
 /*
+ * Integral by splitting the domain into trapezia
+ */
+double integral(const std::function<double(double)>& f, const std::pair<double, double>& domain)
+{
+    constexpr int n{1000};
+    const double  step = (domain.second - domain.first) / n;
+
+    double rv = f(domain.first) + f(domain.second);
+    for (size_t i = 1; i < n; ++i) {
+        rv += 2 * f(domain.first + i * step);
+    }
+    rv *= step / 2;
+
+    return rv;
+}
+
+/*
  * Save a vector to a csv file
  */
 void vector2csv(const std::vector<double>& v, const std::string& path)
@@ -134,8 +151,8 @@ int main(int argc, char* argv[])
     const std::pair<double, double> range{0, 1};
 
     // Define distributions and efficiency
-    auto f          = [](double x) { return 2.1 * gaussPDF(x, 0.0, 1.0); };
-    auto g          = [](double x) { return 2.0 * gaussPDF(x, 3.0, 1.0); };
+    auto f          = [](double x) { return 1.0 * gaussPDF(x, 0.0, 1.0); };
+    auto g          = [](double x) { return 2.0 * gaussPDF(x, 4.0, 1.0); };
     auto efficiency = [](double x) { return 6.6 * gaussPDF(x, 2.0, 3.0); };
 
     // Dump some values to file so I can plot them later with matplotlib
@@ -153,6 +170,12 @@ int main(int argc, char* argv[])
     // Find correction factors
     auto cF = factor(fSamples, f);
     auto cG = factor(gSamples, g);
+
+    // PDFs may not be normalised - we will need to scale by the integrals of the PDFs squared
+    const double fInt = integral(f, domain);
+    const double gInt = integral(g, domain);
+    cF /= fInt * fInt;
+    cG /= gInt * gInt;
 
     // Scale them
     // We have to be sure to scale such that the combined "PDF" doesn't
