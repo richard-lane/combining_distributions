@@ -72,8 +72,13 @@ std::vector<double> linspace(const std::pair<double, double>& domain)
 void vector2csv(const std::vector<double>& v, const std::string& path)
 {
     std::ofstream handle(path);
-    for (const auto x : v)
-        handle << x << ',';
+
+    // Write all the values except the last with a comma in between
+    for (size_t i=0; i<v.size() - 1; ++i)
+        handle << v[i] << ',';
+
+    // Write the last value without a trailing comma
+    handle << v[v.size() -1];
 }
 
 /*

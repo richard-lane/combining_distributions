@@ -70,7 +70,7 @@ def plot_efficiency() -> None:
     y = np.genfromtxt("vals_efficiency.csv", delimiter=",")
 
     # Scale the efficiency to have a mean of 1
-    y /= np.mean(y[~np.isnan(y)])
+    y /= np.mean(y)
 
     ax.plot(x, y, "k", label="true")
 
