@@ -144,8 +144,11 @@ int main()
     auto cG = factor(gSamples, g);
 
     // Scale them
-    cF /= cG;
-    cG /= cG;
+    // We have to be sure to scale such that the combined "PDF" doesn't
+    // have a maximum density > 1, otherwise that will break my accept-reject code
+    const auto scaleFactor = cF + cG;
+    cF /= scaleFactor;
+    cG /= scaleFactor;
 
     // Build an approximate generated PDF
     auto approx = [&f, &g, &cF, &cG](double x) { return cF * f(x) + cG * g(x); };
