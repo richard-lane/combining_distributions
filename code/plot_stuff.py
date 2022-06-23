@@ -68,11 +68,11 @@ def plot_efficiency() -> None:
     fig, ax = plt.subplots()
     x = np.genfromtxt("domain_efficiency.csv", delimiter=",")
     y = np.genfromtxt("vals_efficiency.csv", delimiter=",")
-    mean = np.mean(y[~np.isnan(y)])
 
-    print(y)
+    # Scale the efficiency to have a mean of 1
+    y /= np.mean(y[~np.isnan(y)])
 
-    ax.plot(x, y, label="true")
+    ax.plot(x, y, "k", label="true")
 
     bins = np.linspace(-2, 6, 50)
 
@@ -85,10 +85,14 @@ def plot_efficiency() -> None:
     )
 
     e = true_count / approx_count
-    e /= np.mean(e)
-    e *= mean
+    err = e * np.sqrt(1 / true_count + 1 / approx_count)
+
+    scale = np.mean(e)
+    err /= scale
+    e /= scale
+
     centres = (bins[1:] + bins[:-1]) / 2
-    ax.plot(centres, e, label="measured")
+    ax.errorbar(centres, e, yerr=err, fmt="r.", label="measured")
 
     ax.legend()
 
@@ -99,15 +103,11 @@ def main() -> None:
     procs = [
         Process(target=plot_pdf, args=(s,)) for s in ("f", "g", "efficiency", "approx")
     ]
+    procs += [Process(target=f) for f in (plot_reco, plot_approx, plot_efficiency)]
     for p in procs:
         p.start()
     for p in procs:
         p.join()
-
-    plot_reco()
-    plot_approx()
-
-    plot_efficiency()
 
 
 if __name__ == "__main__":
