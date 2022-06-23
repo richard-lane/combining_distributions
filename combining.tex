@@ -1,6 +1,7 @@
 \documentclass{article}
 
 \usepackage{amsmath}
+\usepackage{graphicx}
 
 \title{Efficiency from Combined Distributions}
 
@@ -103,8 +104,74 @@ We can then use these sums to evaluate the efficiency:
 where we have found the efficiency function up to a multiplicative constant $\int\epsilon(x)dx$ - changing this constant
 does not affect the shape of the efficiency.
 
-\end{document}
-
 \section{Example}
+Consider two distributions, shown in Figure.~\ref{f, g dists}.
+\begin{figure}[h!]
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=1.1\textwidth]{code/build/f.png}
+        \centering
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+        \includegraphics[width=1.1\textwidth]{code/build/g.png}
+        \centering
+    \end{minipage}
+    \caption{PDFs of our two distributions. Note that they are not normalised in this case.}
+    \label{f, g dists}
+\end{figure}
+
+We also define an efficiency function that will modify the distribution of points sampled from these distributions, seen in
+Figure.~\ref{efficiency_plot}:
+\begin{figure}[h!]
+    \includegraphics[width=0.8\textwidth]{code/build/efficiency.png}
+    \centering
+    \caption{Our efficiency function.}
+    \label{efficiency_plot}
+\end{figure}
+
+Sampling from the distributions $f(x)$ and $g(x)$, subject to the above efficiency, gives the sample seen in
+Figure.~\ref{samples}:
+\begin{figure}[h!]
+    \includegraphics[width=0.8\textwidth]{code/build/recoSamples.png}
+    \centering
+    \caption{A sample taken from the distributions $f(x)$ and $g(x)$ seen in Figure.~\ref{f, g dists},
+        subject to the efficiency function seen in Figure.~\ref{efficiency_plot}.}
+    \label{samples}
+\end{figure}
+
+Our aim is to recover the efficiency function from the distributions seen in Figure.~\ref{samples}, using our knowledge of the PDFs $f$ and $g$.
+We first must find the correction factor according to Eq.~\ref{correction_factor}.
+This is done by e.g. taking the sum of the inverse probabilities $\frac{1}{f(x)}$ over the sample taken from the $f$-distribution.
+These correction factors are then used to construct a final PDF, which attempts to model the PDF combined (green in Figure.~\ref{samples}) sample before
+the efficiency was applied.
+This PDF is seen in Figure.~\ref{approx combined pdf}.
+\begin{figure}[h!]
+    \includegraphics[width=0.8\textwidth]{code/build/approx.png}
+    \centering
+    \caption{Our estimate at the PDF the combined sample was generated from}
+    \label{approx combined pdf}
+\end{figure}
+We then generate a sample from this PDF, seen in Figure~.\ref{sample combined}.
+\begin{figure}[h!]
+    \includegraphics[width=0.8\textwidth]{code/build/approxSamples.png}
+    \centering
+    \caption{A sample taken from the combined PDF seen in Figure.~\ref{approx combined pdf}.
+        Also shown is the combined sample that we reconstructed; the ratio of these will be used to find the efficiency.}
+    \label{sample combined}
+\end{figure}
+
+Finally, the efficiency is recovered by taking the ratio between our MC sample and the sample we generated from our combined PDF.
+This is shown in Figure.~\ref{Measured efficiency}.
+
+\begin{figure}[h!]
+    \includegraphics[width=0.8\textwidth]{code/build/measured_efficiency.png}
+    \centering
+    \caption{The efficiency we measure compared to the true efficiency.}
+    \label{Measured efficiency}
+\end{figure}
+
+there is a bias here but i think it's because I don't account for the different PDF normalisations to begin with TODO
 
 \section{Conclusion}
+We can find a combined PDF
+
+\end{document}
