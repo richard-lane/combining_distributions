@@ -35,9 +35,10 @@ def plot_reco() -> None:
 
     kw = {"bins": np.linspace(-2, 6, 50), "histtype": "step"}
 
-    ax.hist(f, **kw)
-    ax.hist(g, **kw)
-    ax.hist(np.concatenate((f, g)), **kw)
+    ax.hist(f, label="f", **kw)
+    ax.hist(g, label="g", **kw)
+    ax.hist(np.concatenate((f, g)), label="f+g", **kw)
+    ax.legend()
 
     fig.savefig("recoSamples.png")
 
@@ -52,11 +53,12 @@ def plot_approx() -> None:
 
     kw = {"bins": np.linspace(-2, 6, 50), "histtype": "step"}
 
-    ax.hist(a, **kw)
+    ax.hist(a, **kw, label="Sample from combined PDF")
 
     f = np.genfromtxt("fsamples.csv", delimiter=",")
     g = np.genfromtxt("gsamples.csv", delimiter=",")
-    ax.hist(np.concatenate((f, g)), **kw, label="reco")
+    ax.hist(np.concatenate((f, g)), label="Reconstructed", **kw)
+    ax.legend()
 
     fig.savefig("approxSamples.png")
 
@@ -75,7 +77,7 @@ def plot_efficiency() -> None:
 
     ax.plot(x, y, "k", label="true")
 
-    bins = np.linspace(-2, 6, 50)
+    bins = np.linspace(-2, 6, 100)
 
     f = np.genfromtxt("fsamples.csv", delimiter=",")
     g = np.genfromtxt("gsamples.csv", delimiter=",")
